@@ -19,7 +19,7 @@
 
 #include <anjay/anjay.h>
 
-#ifdef TARGET_DISCO_L496AG
+//#ifdef TARGET_DISCO_L496AG
 
 #    define HUMIDITY_OID 3304
 
@@ -31,6 +31,6 @@ void humidity_object_uninstall(anjay_t *anjay);
 
 void humidity_object_update(anjay_t *anjay);
 
-#endif // TARGET_DISCO_L496AG
+//#endif // TARGET_DISCO_L496AG
 
 #endif // HUMIDITY_OBJECT_H

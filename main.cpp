@@ -35,16 +35,19 @@
 #include <mbed_trace.h>
 #include <memory>
 
+#include "humidity.h"
 #ifdef TARGET_DISCO_L496AG
 #include "accelerometer.h"
 #include "barometer.h"
-#include "humidity.h"
 #include "joystick.h"
 #include "magnetometer.h"
 #endif // TARGET_DISCO_L496AG
 
 #include "default_config.h"
 
+#include "TransmissionDeviceBG96.h"
+
+tasks::TransmissionDeviceBG96* bg96 = NULL;
 
 namespace {
 
@@ -205,6 +208,7 @@ const char *try_get_modem_imei() {
 }
 
 const char *get_endpoint_name() {
+#if 0
     static char endpoint_name[64] = "";
 
     if (endpoint_name[0] != '\0') {
@@ -219,7 +223,7 @@ const char *get_endpoint_name() {
             return endpoint_name;
         }
     }
-
+#endif
     return DEFAULT_ENDPOINT_NAME;
 }
 
@@ -250,8 +254,9 @@ void lwm2m_serve() {
 
         if (setup_security_object() || setup_server_object()
             || device_object_install(anjay)
+            || humidity_object_install(anjay)
 #ifdef TARGET_DISCO_L496AG
-            || joystick_object_install(anjay) || humidity_object_install(anjay)
+            || joystick_object_install(anjay)
             || barometer_object_install(anjay)
             || magnetometer_object_install(anjay)
             || accelerometer_object_install(anjay)
@@ -278,9 +283,9 @@ void lwm2m_serve() {
         if (anjay) {
             conn_monitoring_object_uninstall(anjay);
             device_object_uninstall(anjay);
+            humidity_object_uninstall(anjay);
 #ifdef TARGET_DISCO_L496AG
             joystick_object_uninstall(anjay);
-            humidity_object_uninstall(anjay);
             barometer_object_uninstall(anjay);
             magnetometer_object_uninstall(anjay);
             accelerometer_object_uninstall(anjay);
@@ -299,8 +304,8 @@ void lwm2m_check_for_notifications(void) {
         {
             ScopedLock<Mutex> lock(anjay_mtx);
             device_object_update(anjay);
-#ifdef TARGET_DISCO_L496AG
             humidity_object_update(anjay);
+#ifdef TARGET_DISCO_L496AG
             barometer_object_update(anjay);
             joystick_object_update(anjay);
             magnetometer_object_update(anjay);
@@ -411,8 +416,14 @@ public:
      * @returns 0 on success, negative value otherwise.
      */
     int init(Lwm2mConfig &config) {
-        NetworkInterface *netif = NetworkInterface::get_default_instance();
+        NetworkInterface *netif = NULL;
+        if (bg96) {
+            netif = bg96->get_network_interface();
+        } else {
+            printf("bg96 device not initialized !!!!!");
+        }
         if (!netif) {
+            printf("netif device not initialized !!!!!");
             return -1;
         }
 
@@ -483,6 +494,13 @@ int main() {
 #else
     avs_log(mbed_stats, INFO, "All stats disabled");
 #endif
+
+    bg96 = new tasks::TransmissionDeviceBG96(*Bg96::get_sync_instance());
+    if (!bg96) {
+        printf("bg96 device not initialized !!!!!");
+    } else {
+        bg96->enable();
+    }
 
     // See https://github.com/ARMmbed/mbed-os/issues/7069. In general this is
     // required to initialize hardware RNG used by default.
