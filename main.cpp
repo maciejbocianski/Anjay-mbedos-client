@@ -44,6 +44,9 @@
 
 #include "default_config.h"
 
+#include "TransmissionDeviceBG96.h"
+
+tasks::TransmissionDeviceBG96* bg96 = NULL;
 
 namespace {
 
@@ -161,6 +164,7 @@ const char *try_get_modem_imei() {
 }
 
 const char *get_endpoint_name() {
+#if 0
     static char endpoint_name[64] = "";
 
     if (endpoint_name[0] != '\0') {
@@ -175,7 +179,7 @@ const char *get_endpoint_name() {
             return endpoint_name;
         }
     }
-
+#endif
     return DEFAULT_ENDPOINT_NAME;
 }
 
@@ -223,10 +227,9 @@ void lwm2m_serve() {
         }
 
         if (setup_security_object(anjay) || setup_server_object(anjay)
-            || device_object_install(anjay) || joystick_object_install(anjay)
-            || humidity_object_install(anjay) || barometer_object_install(anjay)
-            || magnetometer_object_install(anjay)
-            || accelerometer_object_install(anjay)) {
+            || device_object_install(anjay)
+            || humidity_object_install(anjay)
+            || fw_update_install(anjay)) {
             avs_log(lwm2m, ERROR, "cannot register data model objects");
             goto finish;
         }
@@ -363,12 +366,18 @@ public:
      * @returns 0 on success, negative value otherwise.
      */
     int init(Lwm2mConfig &config) {
+
         SocketAddress sa;
         nsapi_error_t err;
 
-        NetworkInterface *netif = NetworkInterface::get_default_instance();
+        NetworkInterface *netif = NULL;
+        if (bg96) {
+            netif = bg96->get_network_interface();
+        } else {
+            printf("bg96 device not initialized !!!!!");
+        }
         if (!netif) {
-            printf("ERROR - can't get default network instance!\n");
+            printf("netif device not initialized !!!!!");
             return -1;
         }
 
@@ -451,6 +460,13 @@ int main() {
 #else
     avs_log(mbed_stats, INFO, "All stats disabled");
 #endif
+
+    bg96 = new tasks::TransmissionDeviceBG96(*Bg96::get_sync_instance());
+    if (!bg96) {
+        printf("bg96 device not initialized !!!!!");
+    } else {
+        bg96->enable();
+    }
 
     // See https://github.com/ARMmbed/mbed-os/issues/7069. In general this is
     // required to initialize hardware RNG used by default.

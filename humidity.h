@@ -19,6 +19,7 @@
 
 #include <anjay/anjay.h>
 
+
 #if (SENSORS_IKS01A2 == 1)
 
 int humidity_object_install(anjay_t *anjay);

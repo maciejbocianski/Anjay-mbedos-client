@@ -2,22 +2,40 @@
   "macros": [
     "SENSORS_IKS01A2=0",
     "__STDC_FORMAT_MACROS",
-    "MBED_CPU_STATS_ENABLED=1",
-    "MBED_HEAP_STATS_ENABLED=1",
-    "MBED_MEM_TRACING_ENABLED=1",
-    "MBED_STACK_STATS_ENABLED=1",
+    "MBED_CPU_STATS_ENABLED=0",
+    "MBED_HEAP_STATS_ENABLED=0",
+    "MBED_MEM_TRACING_ENABLED=0",
+    "MBED_STACK_STATS_ENABLED=0",
     "MBEDTLS_MD5_C=1"
   ],
   "target_overrides": {
     "*": {
-      "cellular.radio-access-technology": "CellularNetwork::RadioAccessTechnology::RAT_GSM",
       "mbed-trace.enable": 1,
       "mbed-trace.max-level": "TRACE_LEVEL_DEBUG",
-      "nsapi.default-cellular-apn": "\"Plus\"",
+      "nsapi.default-cellular-apn": "\"m2m.tele2.com\"",
       "platform.stdio-baud-rate": 115200,
       "platform.stdio-convert-newlines": 1,
       "target.OUTPUT_EXT": "bin",
-      "target.app_offset": "0x10000"
+
+      "target.app_offset": "0x10000",
+      "target.network-default-interface-type": "CELLULAR",
+
+			"nanostack-hal.critical-section-usable-from-interrupt" : true,
+			"nanostack-hal.event-loop-dispatch-from-application"   : false,
+			"nanostack-hal.event-loop-use-mbed-events"             : true,
+			"nanostack.configuration"                              : "ethernet_host",
+
+			"nsapi.default-cellular-plmn"               : null,
+			"nsapi.default-cellular-sim-pin"            : null,
+			"nsapi.default-cellular-username"           : null,
+			"nsapi.default-cellular-password"           : null,
+
+			"cellular.debug-at"                         : false,
+			"cellular.use-apn-lookup"                   : false,
+			"cellular.use-sms"                          : false,
+			"cellular.clear-on-connect"                 : true,
+			"cellular.offload-dns-queries"              : null,
+			"QUECTEL_BG96.provide-default"              : false
     },
     "DISCO_L496AG": {
       "stmod_cellular.provide-default": "true",
@@ -31,16 +49,18 @@
     }
   },
   "config": {
-    "endpoint_name": "\"urn:dev:os:anjay-mbedos-test\"",
-    "rg_nosec_addr": "\"coap://try-anjay.avsystem.com:5683\"",
-    "rg_dtls_addr": "\"coaps://try-anjay.avsystem.com:5684\"",
-    "bs_nosec_addr": "\"coap://try-anjay.avsystem.com:5693\"",
-    "bs_dtls_addr": "\"coaps://try-anjay.avsystem.com:5684\"",
-    "with_rg_server": false,
-    "with_bs_server": true,
+    "endpoint_name": "\"urn:dev:os:BTT_non_secure_01\"",
+    "__endpoint_name": "\"urn:dev:os:BTT_secure_01\"",
+    "rg_nosec_addr": "\"coap://lwm2m-test.avsystem.io:5683\"",
+    "rg_dtls_addr":  "\"coaps://lwm2m-test.avsystem.io:5684\"",
+    "bs_nosec_addr": "\"coap://lwm2m-test.avsystem.io:5693\"",
+    "bs_dtls_addr":  "\"coaps://lwm2m-test.avsystem.io:5684\"",
+    "with_rg_server": true,
+    "with_bs_server": false,
     "with_dtls": false,
-    "psk_identity": "\"***PLEASE SET PSK IDENTITY HERE***\"",
-    "psk_key": "\"***PLEASE SET PSK KEY HERE***\"",
+    "psk_identity": "\"urn:dev:os:BTT_non_secure_01\"",
+    "__psk_identity": "\"urn:dev:os:BTT_secure\"",
+    "psk_key": "\"11111111111111111111111111111111111111111111111111111111111111\"",
     "serial_menu_echo": true
   }
 }
