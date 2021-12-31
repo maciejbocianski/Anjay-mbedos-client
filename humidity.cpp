@@ -37,9 +37,9 @@
 
 #include <mbed.h>
 
-#ifdef TARGET_DISCO_L496AG
+//#ifdef TARGET_DISCO_L496AG
 
-#    include <XNucleoIKS01A2.h>
+//#    include <XNucleoIKS01A2.h>
 
 #    include "humidity.h"
 
@@ -101,7 +101,7 @@
 
 typedef struct humidity_struct {
     const anjay_dm_object_def_t *def;
-    HTS221Sensor *sensor;
+    //HTS221Sensor *sensor;
     float min_value;
     float max_value;
     float curr_value;
@@ -246,6 +246,7 @@ struct ObjDef : public anjay_dm_object_def_t {
 } const OBJ_DEF;
 
 const anjay_dm_object_def_t **humidity_object_create(void) {
+#if 0
     HTS221Sensor *sensor = XNucleoIKS01A2::instance(D14, D15)->ht_sensor;
     uint8_t id = 0;
     float sensor_value;
@@ -254,15 +255,15 @@ const anjay_dm_object_def_t **humidity_object_create(void) {
         HUMIDITY_OBJ_LOG(WARNING, "Failed to initialize humidity sensor");
         return NULL;
     }
-
+#endif
     humidity_t *obj = (humidity_t *) avs_calloc(1, sizeof(humidity_t));
     if (!obj) {
-        (void) sensor->disable();
+        //(void) sensor->disable();
         return NULL;
     }
     obj->def = &OBJ_DEF;
-    obj->sensor = sensor;
-    obj->curr_value = sensor_value;
+    //obj->sensor = sensor;
+    obj->curr_value = 0.0f;
     reset_min_max_values(obj);
 
     return &obj->def;
@@ -309,12 +310,17 @@ void humidity_object_update(anjay_t *anjay) {
     }
     humidity_t *obj = get_obj(OBJ_DEF_PTR);
 
-    float value;
+    static float value = MIN_RANGE_VALUE;
+    value += 1.0f;
+    if (value > MAX_RANGE_VALUE) {
+        value = MIN_RANGE_VALUE;
+    }
+#if 0
     if (obj->sensor->get_humidity(&value)) {
         HUMIDITY_OBJ_LOG(ERROR, "Failed to get humidity");
         return;
     }
-
+#endif
     if (value != obj->curr_value) {
         obj->curr_value = value;
         (void) anjay_notify_changed(anjay, HUMIDITY_OID, 0, RID_SENSOR_VALUE);
@@ -331,4 +337,4 @@ void humidity_object_update(anjay_t *anjay) {
     }
 }
 
-#endif // TARGET_DISCO_L496AG
+//#endif // TARGET_DISCO_L496AG
