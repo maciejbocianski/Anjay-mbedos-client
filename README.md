@@ -98,12 +98,16 @@ future bootups.
 ## Running demo
 1. Change branche to `btt_demo`
 2. Setup workspace: `mbed deploy`
-3. Change your device `endpoint_name` in `mbed_app.json`
+3. Change your 
+3. Set/change following configs in `mbed_app.json`:
+    - device `endpoint_name` to `urn:dev:os:XXXXXXXXXXX`
+    - set `psk_identity` to the same value as in `endpoint_name`
+    - `psk_key` to any key you want to use or use existing
 4. Mock custom board: `mbedls --mock 0828:BT_01001_V0_2`
 5. If using mbed-os 5.X apply AT_Handler patch from https://github.com/Waleed-Elmughrabi/BTTM-IOT-NODE-Master
 6. Build&flash: `mbed compile -m BT_01001_V0_2 --profile debug --flash`
 7. Add device to Coiote Device Management
     * Go to Device Inventory, click `+ Add device` button
-    * Than Connect your LwM2M device via via the Management server: set `endpoint_name` as `Device ID`, any `Friendly name`, and `Security mode` as `NoSec` than click `Add device`
+    * Than Connect your LwM2M device via via the Management server: set `endpoint_name` as `Device ID`, and set `Friendly name`, and set  `Security mode` as `PSK` and set `psk_identity` as `Key Identity` and set `psk_key` as `Key` than click `Add device`
     * Flash device and wait until it get connected then move to next step
 8. You have connected device

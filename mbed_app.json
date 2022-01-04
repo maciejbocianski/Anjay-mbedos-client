@@ -49,18 +49,16 @@
     }
   },
   "config": {
-    "endpoint_name": "\"urn:dev:os:BTT_non_secure_01\"",
-    "__endpoint_name": "\"urn:dev:os:BTT_secure_01\"",
+    "endpoint_name": "\"urn:dev:os:BTT_secure_01\"",
     "rg_nosec_addr": "\"coap://lwm2m-test.avsystem.io:5683\"",
     "rg_dtls_addr":  "\"coaps://lwm2m-test.avsystem.io:5684\"",
     "bs_nosec_addr": "\"coap://lwm2m-test.avsystem.io:5693\"",
     "bs_dtls_addr":  "\"coaps://lwm2m-test.avsystem.io:5684\"",
     "with_rg_server": true,
     "with_bs_server": false,
-    "with_dtls": false,
-    "psk_identity": "\"urn:dev:os:BTT_non_secure_01\"",
-    "__psk_identity": "\"urn:dev:os:BTT_secure\"",
-    "psk_key": "\"11111111111111111111111111111111111111111111111111111111111111\"",
+    "with_dtls": true,
+    "psk_identity": "\"urn:dev:os:BTT_secure_01\"",
+    "psk_key": "\"111111111111111111111111\"",
     "serial_menu_echo": true
   }
 }
