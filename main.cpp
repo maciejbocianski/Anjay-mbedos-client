@@ -209,9 +209,11 @@ void lwm2m_serve() {
         anjay_configuration_t CONFIG;
         memset(&CONFIG, 0, sizeof(CONFIG));
         CONFIG.endpoint_name = get_endpoint_name();
-        CONFIG.in_buffer_size = 1024;
-        CONFIG.out_buffer_size = 1024;
-        CONFIG.msg_cache_size = 2048;
+
+        CONFIG.in_buffer_size = 4096;
+        CONFIG.out_buffer_size = 4096;
+        CONFIG.udp_listen_port = 5683;
+        CONFIG.msg_cache_size = 4096;
 
         avs_log(lwm2m, INFO, "endpoint name: %s", CONFIG.endpoint_name);
         anjay_t *anjay = anjay_new(&CONFIG);
