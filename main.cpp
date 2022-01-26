@@ -35,12 +35,9 @@
 #include <mbed_trace.h>
 #include <memory>
 
-#include "joystick.h" // gets activated with TARGET_DISCO_L496AG
+#include "fota/firmware_update.h"
 
-#include "accelerometer.h" // Gets activated with SENSORS_IKS01A2 == 1
-#include "barometer.h"
 #include "humidity.h"
-#include "magnetometer.h"
 
 #include "default_config.h"
 
@@ -188,10 +185,6 @@ void lwm2m_check_for_notifications(avs_sched_t *sched, const void *anjay_ptr) {
 
     device_object_update(anjay);
     humidity_object_update(anjay);
-    barometer_object_update(anjay);
-    joystick_object_update(anjay);
-    magnetometer_object_update(anjay);
-    accelerometer_object_update(anjay);
 
     if (anjay_all_connections_failed(anjay)) {
         anjay_event_loop_interrupt(anjay);
@@ -255,11 +248,7 @@ void lwm2m_serve() {
         if (anjay) {
             conn_monitoring_object_uninstall(anjay);
             device_object_uninstall(anjay);
-            joystick_object_uninstall(anjay);
             humidity_object_uninstall(anjay);
-            barometer_object_uninstall(anjay);
-            magnetometer_object_uninstall(anjay);
-            accelerometer_object_uninstall(anjay);
             anjay_delete(anjay);
         }
 
