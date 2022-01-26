@@ -35,6 +35,8 @@
 #include <mbed_trace.h>
 #include <memory>
 
+#include "fota/firmware_update.h"
+
 #include "humidity.h"
 #ifdef TARGET_DISCO_L496AG
 #include "accelerometer.h"
@@ -255,6 +257,7 @@ void lwm2m_serve() {
         if (setup_security_object() || setup_server_object()
             || device_object_install(anjay)
             || humidity_object_install(anjay)
+            || fw_update_install(anjay)
 #ifdef TARGET_DISCO_L496AG
             || joystick_object_install(anjay)
             || barometer_object_install(anjay)
