@@ -221,6 +221,7 @@ static int resource_read(anjay_t *anjay,
     (void) iid;
     assert(iid == 0);
 
+    SocketAddress address;
     connectivity_monitoring_t *obj = get_obj(obj_ptr);
     assert(obj);
 
@@ -284,13 +285,15 @@ static int resource_read(anjay_t *anjay,
 
     case RID_IP_ADDRESSES:
         assert(riid == 0);
+        obj->cellular_context->get_ip_address(&address);
         return anjay_ret_string(
-                ctx, ensure_non_null(obj->cellular_context->get_ip_address()));
+                ctx, ensure_non_null(address.get_ip_address()));
 
     case RID_ROUTER_IP_ADDRESSES:
         assert(riid == 0);
+        obj->cellular_context->get_gateway(&address);
         return anjay_ret_string(
-                ctx, ensure_non_null(obj->cellular_context->get_gateway()));
+                ctx, ensure_non_null(address.get_ip_address()));
 
     case RID_LINK_UTILIZATION:
         assert(riid == ANJAY_ID_INVALID);
