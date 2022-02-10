@@ -17,7 +17,7 @@
 #include "CellularContext.h"
 #include "CellularDevice.h"
 #include "QUECTEL_BG96.h"
-#include "UARTSerial.h"
+#include "BufferedSerial.h"
 #include "avs_socket_global.h"
 #include "conn_monitoring_object.h"
 #include "device_config_serial_menu.h"
@@ -94,7 +94,7 @@ void serve_forever(
             anjay_sched_run(anjay);
         }
         // Allow other tasks to be done
-        ThisThread::sleep_for(10);
+        ThisThread::sleep_for(10ms);
     } while (!anjay_all_connections_failed(anjay));
 }
 
@@ -298,7 +298,7 @@ void lwm2m_serve() {
         }
 
         avs_log(lwm2m, ERROR, "resetting to factory defaults after 30s");
-        ThisThread::sleep_for(30000);
+        ThisThread::sleep_for(30000ms);
     }
 }
 
@@ -315,7 +315,7 @@ void lwm2m_check_for_notifications(void) {
             accelerometer_object_update(anjay);
 #endif // TARGET_DISCO_L496AG
         }
-        ThisThread::sleep_for(1000);
+        ThisThread::sleep_for(1000ms);
     }
 }
 
@@ -516,7 +516,7 @@ int main() {
                "class (defined in main.cpp) for more details.\n");
 
         for (;;) {
-            ThisThread::sleep_for(1000);
+            ThisThread::sleep_for(1000ms);
         }
     }
 
@@ -529,7 +529,7 @@ int main() {
         int heartbeat_value = 0;
         for (;;) {
             heartbeat = (heartbeat_value ^= 1);
-            ThisThread::sleep_for(1000);
+            ThisThread::sleep_for(1000ms);
         }
     }
 }

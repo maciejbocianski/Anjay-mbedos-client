@@ -4,6 +4,7 @@
 #include "bg96.h"
 
 #include "QUECTEL_BG96_CellularInformation.h"
+#include "QUECTEL_BG96_CellularContext.h"
 #include "CellularDevice.h"
 #include "CellularInformation.h"
 #include "QUECTEL_BG96.h"
@@ -34,7 +35,7 @@ AquiredLock::~AquiredLock() {
 
 misc::Synchronized<Bg96, Mutex>* Bg96::get_sync_instance() {
   static misc::Synchronized<Bg96, Mutex>* instance = new misc::Synchronized<Bg96, Mutex>([](){
-    auto serial = new UARTSerial(BT_BG96_UART1_TX, BT_BG96_UART1_RX, BG96_BAUD_RATE);
+    auto serial = new BufferedSerial(BT_BG96_UART1_TX, BT_BG96_UART1_RX, BG96_BAUD_RATE);
     serial->set_flow_control(SerialBase::RTSCTS, BT_BG96_UART1_RTS, BT_BG96_UART1_CTS);
     return serial;
   }());
@@ -45,6 +46,7 @@ misc::Synchronized<Bg96, Mutex>* Bg96::get_sync_instance() {
 Bg96::Bg96(FileHandle* fh) : QUECTEL_BG96(fh, BT_BG96_PWRKEY, BT_BG96_PIN_ACT_LVL, BT_BG96_RESET),
                              gps_antenna_power(BT_GPS_ACT_ANT_EN, !BT_GPS_ACT_ANT_ACT_LVL),
                              shared_poweron_lock(0) {
+  _at = get_at_handler();
 }
 
 Bg96::~Bg96() {
@@ -101,7 +103,7 @@ void Bg96::power_off() {
   shutdown();
   gps_antenna_power = !BT_GPS_ACT_ANT_ACT_LVL;
 
-  ThisThread::sleep_for(2000); // Wait before soft_power_off - this seems to be necessary to correctly shutdown modem
+  ThisThread::sleep_for(2000ms); // Wait before soft_power_off - this seems to be necessary to correctly shutdown modem
   nsapi_error_t ret = soft_power_off();
   //nsapi_error_t ret = QUECTEL_BG96::soft_power_off();
   //watchdog.kick();
@@ -249,7 +251,7 @@ void Bg96::disable_gps() {
 
 nsapi_error_t Bg96::get_sim_iccid(char* sim_iccid, size_t buf_size) {
   _at->lock();
-  mbed::QUECTEL_BG96_CellularInformation cellular_information(*_at);
+  mbed::QUECTEL_BG96_CellularInformation cellular_information(*_at, *this);
   nsapi_error_t error = cellular_information.get_iccid(sim_iccid, buf_size);
   _at->unlock();
   return error;
@@ -370,4 +372,12 @@ CellularDevice* CellularDevice::get_default_instance() {
   return Bg96::get_sync_instance()->non_sync_block([](auto& bg96) {
     return static_cast<CellularDevice*>(&bg96);
   });
+}
+
+
+AT_CellularContext *Bg96::create_context_impl(ATHandler &at, const char *apn, bool cp_req, bool nonip_req)
+{
+  AT_CellularContext *ctx = new QUECTEL_BG96_CellularContext(at, this, apn, cp_req, nonip_req);
+  ctx->set_default_parameters(); // Force to use default-cellular-apn (MBED_CONF_NSAPI_DEFAULT_CELLULAR_APN)
+  return ctx;
 }

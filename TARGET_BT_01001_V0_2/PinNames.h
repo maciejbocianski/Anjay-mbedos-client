@@ -222,49 +222,49 @@ typedef enum {
     ADC_VREF = 0xF1,
     ADC_VBAT = 0xF2,
 
-    // Arduino pin naming just because some libraries rely on them during compile
-    A0          = PA_0,
-    A1          = PA_1,
-    A2          = PA_2,
-    A3          = PA_3,
-    A4          = PA_4,
-    A5          = PA_5,
-    D0          = PA_6,
-    D1          = PA_7,
-    D2          = PA_8,
-    D3          = PA_9,
-    D4          = PA_10,
-    D5          = PA_11,
-    D6          = PA_12,
-    D7          = PA_13,
-    D8          = PA_14,
-    D9          = PA_15,
-    D10         = PB_0,
-    D11         = PB_1,
-    D12         = PB_2,
-    D13         = PB_3,
-    D14         = PB_4,
-    D15         = PB_5,
+#ifdef TARGET_FF_ARDUINO_UNO
+    ARDUINO_UNO_A0  = PA_3,
+    ARDUINO_UNO_A1  = PC_0,
+    ARDUINO_UNO_A2  = PC_3,
+    ARDUINO_UNO_A3  = PC_1,
+    ARDUINO_UNO_A4  = PC_4,
+    ARDUINO_UNO_A5  = PC_5,
+
+    ARDUINO_UNO_D0  = PD_9,
+    ARDUINO_UNO_D1  = PD_8,
+    ARDUINO_UNO_D2  = PF_15,
+    ARDUINO_UNO_D3  = PE_13,
+    ARDUINO_UNO_D4  = PF_14,
+    ARDUINO_UNO_D5  = PE_11,
+    ARDUINO_UNO_D6  = PE_9,
+    ARDUINO_UNO_D7  = PF_13,
+    ARDUINO_UNO_D8  = PF_12,
+    ARDUINO_UNO_D9  = PD_15,
+    ARDUINO_UNO_D10 = PD_14,
+    ARDUINO_UNO_D11 = PA_7,
+    ARDUINO_UNO_D12 = PA_6,
+    ARDUINO_UNO_D13 = PA_5,
+    ARDUINO_UNO_D14 = PB_9,
+    ARDUINO_UNO_D15 = PB_8,
+#endif
 
     // STDIO for console print
 #ifdef MBED_CONF_TARGET_STDIO_UART_TX
-    STDIO_UART_TX = MBED_CONF_TARGET_STDIO_UART_TX,
+    CONSOLE_TX = MBED_CONF_TARGET_STDIO_UART_TX,
 #else
-    STDIO_UART_TX = PC_1,
+    CONSOLE_TX = PC_1,
 #endif
 #ifdef MBED_CONF_TARGET_STDIO_UART_RX
-    STDIO_UART_RX = MBED_CONF_TARGET_STDIO_UART_RX,
+    CONSOLE_RX = MBED_CONF_TARGET_STDIO_UART_RX,
 #else
-    STDIO_UART_RX = PC_0,
+    CONSOLE_RX = PC_0,
 #endif
 
     // Generic signals namings
     LED1        = PD_2,
 
-    SERIAL_TX   = STDIO_UART_TX, // Virtual Com Port
-    SERIAL_RX   = STDIO_UART_RX, // Virtual Com Port
-    USBTX       = STDIO_UART_TX, // Virtual Com Port
-    USBRX       = STDIO_UART_RX, // Virtual Com Port
+    SERIAL_TX   = CONSOLE_TX, // Virtual Com Port
+    SERIAL_RX   = CONSOLE_RX, // Virtual Com Port
 
     /**** USB FS pins ****/
     USB_OTG_FS_DM = PA_11,

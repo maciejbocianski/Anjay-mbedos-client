@@ -59,12 +59,16 @@ public:
 
   ~Bg96();
 
+protected:
+  AT_CellularContext *create_context_impl(ATHandler &at, const char *apn, bool cp_req = false, bool nonip_req = false);
+
 private:
   Bg96(FileHandle* fh);
 
   DigitalOut gps_antenna_power;
 
-  UARTSerial* serial_connection;
+  BufferedSerial* serial_connection;
+  ATHandler* _at;
 
   bool isPoweredOn;
   bool isGPSAntennaOn;

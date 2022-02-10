@@ -1,0 +1,71 @@
+diff --git a/src/avs_mutex_impl.cpp b/src/avs_mutex_impl.cpp
+index f14918e..03f19a7 100644
+--- a/src/avs_mutex_impl.cpp
++++ b/src/avs_mutex_impl.cpp
+@@ -35,7 +35,8 @@ int avs_mutex_create(avs_mutex_t **out_mutex) {
+ }
+ 
+ int avs_mutex_lock(avs_mutex_t *mutex) {
+-    return mutex->mbed_mtx.lock() == osOK ? 0 : -1;
++    mutex->mbed_mtx.lock();
++    return 0;
+ }
+ 
+ int avs_mutex_try_lock(avs_mutex_t *mutex) {
+@@ -43,7 +44,8 @@ int avs_mutex_try_lock(avs_mutex_t *mutex) {
+ }
+ 
+ int avs_mutex_unlock(avs_mutex_t *mutex) {
+-    return mutex->mbed_mtx.unlock() == osOK ? 0 : -1;
++    mutex->mbed_mtx.unlock();
++    return 0;
+ }
+ 
+ void avs_mutex_cleanup(avs_mutex_t **mutex) {
+diff --git a/src/avs_net_impl/avs_socket_impl.cpp b/src/avs_net_impl/avs_socket_impl.cpp
+index d0ed79c..fead665 100644
+--- a/src/avs_net_impl/avs_socket_impl.cpp
++++ b/src/avs_net_impl/avs_socket_impl.cpp
+@@ -694,8 +694,10 @@ success:
+     }
+     update_remote_endpoint(host, address);
+     if (local_address_.get_ip_version() == NSAPI_UNSPEC) {
++        SocketAddress address;
++        AvsSocketGlobal::get_interface().get_ip_address(&address);
+         local_address_.set_ip_address(
+-                AvsSocketGlobal::get_interface().get_ip_address());
++                address.get_ip_address());
+     }
+     if (local_address_.get_port() == 0) {
+         int32_t local_port = get_local_port(mbed_socket());
+diff --git a/src/avs_net_impl/avs_tcp_socket_impl.cpp b/src/avs_net_impl/avs_tcp_socket_impl.cpp
+index acaba86..27b4511 100644
+--- a/src/avs_net_impl/avs_tcp_socket_impl.cpp
++++ b/src/avs_net_impl/avs_tcp_socket_impl.cpp
+@@ -14,7 +14,7 @@
+  * limitations under the License.
+  */
+ 
+-#include <TCPServer.h>
++//#include <TCPServer.h>
+ #include <TCPSocket.h>
+ 
+ #include <avsystem/commons/avs_commons_config.h>
+@@ -178,7 +178,7 @@ avs_error_t AvsTcpSocket::try_bind(const SocketAddress &localaddr) {
+         return avs_errno(AVS_EINVAL);
+     }
+ 
+-#if PREREQ_MBED_OS(5, 10, 0)
++#if 1//PREREQ_MBED_OS(5, 10, 0)
+     auto_ptr<TCPSocket> socket(new (nothrow) TCPSocket());
+ #else // mbed OS < 5.10
+     auto_ptr<TCPServer> socket(new (nothrow) TCPServer());
+@@ -247,7 +247,7 @@ avs_error_t AvsTcpSocket::accept(AvsSocket *new_socket_) {
+     SocketAddress addr;
+     socket_->set_timeout(NET_ACCEPT_TIMEOUT_MS);
+     nsapi_error_t err = 0;
+-#if PREREQ_MBED_OS(5, 10, 0)
++#if 1//PREREQ_MBED_OS(5, 10, 0)
+     auto_ptr<TCPSocket> new_mbed_socket(
+             static_cast<TCPSocket *>(socket_.get())->accept(&err));
+ #else // mbed OS < 5.10
